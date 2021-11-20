@@ -22,31 +22,26 @@
 # Function is checking user exist
 # get 1 params - <username>
 function isUserExist {
-    if [ $# -eq 1 ] && id "$1" >/dev/null 2>&1
-    then
-        return 1
-    fi
-
-    return 0
+    return $(id -u "$1" >/dev/null 2>&1)
 }
 
 # Function is checking directory exist
 # get 1 params - <directory>
 function isDirectoryExist {
-    if [ $# -eq 1 ] && [ -d $1 ]
-    then
-        return 1
+    if [ -d "$1" ]; then
+        return 0
     fi
 
-    return 0
+    return 1
 }
 
 # Function is checking for have negative result and show error message
 # get 2 params - <condition> and <message>
 function showErrorIfFalse {
-    if [ $# -ge 1 ] && [ $1 -eq 0 ]
+    if [ $# -ge 1 ] && [ $1 -gt 0 ]
     then
         echo "$2"
+        echo "Exit"
         exit
     fi
 }
@@ -55,12 +50,10 @@ function showErrorIfFalse {
 # START
 #
 
-if [[ $EUID -ne 0 ]]
-then
-   showErrorIfFalse 0 "This script must be run as root" 
-elif [ $# -ne 2 ]
-then
-    showErrorIfFalse 0 "No parameters found. Script take 2 params 'username' and 'directory'"
+if [[ $EUID -ne 0 ]]; then
+   showErrorIfFalse 1 "This script must be run as root" 
+elif [ $# -ne 2 ]; then
+    showErrorIfFalse 1 "No parameters found. Script take 2 params 'username' and 'directory'"
 fi
 
 isUserExist $1
@@ -69,11 +62,10 @@ showErrorIfFalse $? "User does not exist"
 isDirectoryExist $2
 showErrorIfFalse $? "Directory does not exist"
 
-RESULT=$(chown -R $1 $2)
-if [ -n "$RESULT" ]
-then
-    echo "$RESULT"
-else
+read -p "Are you really want change owner for directory '$(pwd)' and for all files inside? 'yes' or 'no': " ANSWER
+if [ "$ANSWER" = "y" ] || [ "$ANSWER" = "yes" ]; then
+    RESULT=$(chown -R $1 $2)
+    showErrorIfFalse ${#RESULT} "$RESULT"
     ls -do $2
     echo "All done!"
 fi
