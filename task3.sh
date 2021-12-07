@@ -157,7 +157,8 @@ do
     writeData "${FILES_ARRAY[$ix]}" "$GROUP" "$DATE" "$EMAIL"
 done
 
-ls -a
+tree
+
 
 #################################################################
 # TASK 2
@@ -165,6 +166,8 @@ ls -a
 echo -e "\nTASK 2 - RELOCATE FILES"
 
 mvAllFileFromDirToDir $LAST_NAME $LAST_NAME
+
+tree
 
 
 #################################################################
@@ -180,6 +183,7 @@ else
     echo "File $LAST_NAME/$NAME.txt did not have any email"
 fi
 
+tree
 
 #################################################################
 # TASK 4
@@ -198,5 +202,7 @@ if [ -n "$FIND_TEXT" ]; then
 else
     showErrorIfFalse 1 "Cancelled"
 fi
+
+tree
 
 echo "\nBy!"
