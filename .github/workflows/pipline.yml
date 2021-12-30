@@ -1,6 +1,6 @@
 # CI for softserv devops autumn school 2021
 
-name: Develop
+name: CI/CD (GitAction)
 
 # Controls when the workflow will run
 on:
